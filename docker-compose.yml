@@ -1,0 +1,35 @@
+version: '3.8'
+
+x-environment: &environment
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: app
+  PGSSLMODE: disable
+  TZ: "Asia/Tokyo"
+
+services:
+  app:
+    container_name: app
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app:/usr/src/app
+    environment: *environment
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16.0-alpine3.18
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment: *environment
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
