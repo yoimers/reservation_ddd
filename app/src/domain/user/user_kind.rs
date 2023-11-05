@@ -12,3 +12,14 @@ impl Default for UserKind {
     Self::Regular
   }
 }
+
+impl From<i32> for UserKind {
+  fn from(value: i32) -> Self {
+    match value {
+      1 => Self::Regular,
+      2 => Self::VIP,
+      3 => Self::Admin,
+      _ => Self::Regular,
+    }
+  }
+}

@@ -1,24 +1,30 @@
+-- Add migration script here
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE IF NOT EXISTS users (
-  id         BIGSERIAL NOT NULL PRIMARY KEY,
-  name       VARCHAR(255),
+  id         UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+  name       VARCHAR(255) NOT NULL,
+  kind       INTEGER   NOT NULL,
   created_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS hotels (
-  id         BIGSERIAL NOT NULL PRIMARY KEY,
-  name       VARCHAR(255),
+  id         UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+  name       VARCHAR(255) NOT NULL,
   room_num   INTEGER   NOT NULL,
   created_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP
 );
 
+DROP INDEX IF EXISTS hotels_name;
 CREATE INDEX hotels_name ON hotels (name);
 
 CREATE TABLE IF NOT EXISTS rooms (
-  id         BIGSERIAL NOT NULL PRIMARY KEY,
-  hotel_id   BIGINT    NOT NULL,
-  name       VARCHAR(255),
+  id         UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+  hotel_id   UUID    NOT NULL,
+  name       VARCHAR(255) NOT NULL,
   room_num   INTEGER   NOT NULL,
   created_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
@@ -26,10 +32,10 @@ CREATE TABLE IF NOT EXISTS rooms (
 );
 
 CREATE TABLE IF NOT EXISTS room_reservations (
-  id         BIGSERIAL NOT NULL PRIMARY KEY,
-  hotel_id   BIGINT    NOT NULL,
-  room_id    BIGINT    NOT NULL,
-  user_id    BIGINT    NOT NULL,
+  id         UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
+  hotel_id   UUID      NOT NULL,
+  room_id    UUID      NOT NULL,
+  user_id    UUID      NOT NULL,
   start_at   TIMESTAMP NOT NULL,
   end_at     TIMESTAMP NOT NULL,
   created_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
@@ -39,14 +45,3 @@ CREATE TABLE IF NOT EXISTS room_reservations (
   CONSTRAINT fk_room_reservations_user_id FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
-CREATE TABLE IF NOT EXISTS posts (
-  id         BIGSERIAL    NOT NULL PRIMARY KEY,
-  user_id    BIGINT       NOT NULL,
-  title      VARCHAR(255) NOT NULL,
-  body       TEXT,
-  created_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-  CONSTRAINT fk_posts_user_id FOREIGN KEY (user_id) REFERENCES users (id)
-);
-
-CREATE INDEX posts_user_id ON posts (user_id);

@@ -21,6 +21,15 @@ impl UserName {
     let len = name.len();
     USER_NAME_MIN_LENGTH <= len && len <= USER_NAME_MAX_LENGTH
   }
+  pub fn to_str(&self) -> &str {
+    &self.0
+  }
+}
+
+impl From<String> for UserName {
+  fn from(value: String) -> Self {
+    UserName::new(&value).unwrap()
+  }
 }
 
 impl TryFrom<&str> for UserName {

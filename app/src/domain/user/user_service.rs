@@ -1,11 +1,6 @@
 use anyhow::{anyhow, Result};
 
-use super::{
-  user::{self, User},
-  user_id::UserID,
-  user_name::UserName,
-  user_repository::TUserRepository,
-};
+use super::{user::User, user_id::UserID, user_name::UserName, user_repository::TUserRepository};
 
 pub struct UserService {
   user_repository: Box<dyn TUserRepository>,

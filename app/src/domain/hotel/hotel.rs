@@ -1,15 +1,36 @@
 use chrono::NaiveTime;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+use crate::domain::room::room_name;
 
 use super::{hotel_id::HotelID, hotel_name::HotelName};
 
 #[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct Hotel {
-  id: HotelID,
-  name: HotelName,
-  room_num: u32,
-  opening_time: NaiveTime,
-  closing_time: NaiveTime,
+  pub id: HotelID,
+  pub name: HotelName,
+  pub room_num: u32,
+  pub opening_time: NaiveTime,
+  pub closing_time: NaiveTime,
+}
+
+impl Hotel {
+  pub fn new(
+    id: HotelID,
+    name: HotelName,
+    room_num: u32,
+    opening_time: NaiveTime,
+    closing_time: NaiveTime,
+  ) -> Self {
+    Self {
+      id,
+      name,
+      room_num,
+      opening_time,
+      closing_time,
+    }
+  }
 }
 
 #[cfg(test)]
