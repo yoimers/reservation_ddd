@@ -1,20 +1,44 @@
 mod domain;
 mod infrastructure;
+
+use std::sync::Arc;
+
 use axum::{routing::get, Router};
-use domain::user::user_repository::TUserRepository;
+use domain::{
+  hotel::hotel_service::HotelService, room::room_service::RoomService,
+  user::user_service::UserService,
+};
 use infrastructure::datastore::postgresql::{PgConfig, PgContext};
+
+pub struct AppModule {
+  user_service: UserService,
+  hotel_service: HotelService,
+  room_service: RoomService,
+}
+
+impl AppModule {
+  pub async fn new() -> anyhow::Result<Self> {
+    let context = Arc::new(PgContext::new(PgConfig::new()).await?);
+    Ok(Self {
+      user_service: UserService::new(context.clone()),
+      hotel_service: HotelService::new(context.clone()),
+      room_service: RoomService::new(context.clone()),
+    })
+  }
+  pub fn user_service(&self) -> &UserService {
+    &self.user_service
+  }
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-  let user_repository = PgContext::new(PgConfig::new()).await.unwrap();
-  let x = user_repository
+  let app_module = AppModule::new().await?;
+  let x = app_module
+    .user_service()
     .find_user(&"Liam Lee".try_into().unwrap())
     .await
     .unwrap();
   println!("{:?}", x);
-  // let users: Vec<Users> = sqlx::query_as("SELECT * from users")
-  //   .fetch_all(&pool)
-  //   .await?;
 
   let app = Router::new().route("/", get(|| async { "Hello, x!" }));
 

@@ -1,9 +1,13 @@
+use std::sync::Arc;
+
 use anyhow::Ok;
 use async_trait::async_trait;
 use sqlx::{Pool, Postgres};
 
-use crate::domain::user::{
-  user::User, user_id::UserID, user_name::UserName, user_repository::TUserRepository,
+use crate::domain::{
+  hotel::{hotel::Hotel, hotel_repository::THotelRepository},
+  room::{room::Room, room_repository::TRoomRepository},
+  user::{user::User, user_id::UserID, user_name::UserName, user_repository::TUserRepository},
 };
 
 pub struct PgConfig {
@@ -53,23 +57,23 @@ impl PgContext {
 #[async_trait]
 impl TUserRepository for PgContext {
   async fn find_user(&self, user_name: &UserName) -> anyhow::Result<Option<User>> {
-    // let x = sqlx::query_as!(
-    //   User,
-    //   r#"
-    //     SELECT id, name, kind FROM users WHERE name = $1
-    //   "#,
-    //   user_name.to_str()
-    // )
-    // .fetch_optional(&self.conn)
-    // .await?;
-    let x = sqlx::query_as(
+    let x = sqlx::query_as!(
+      User,
       r#"
-        SELECT id, name, kind FROM users WHERE name = $1
+        SELECT id, name, kind, created_at, updated_at FROM users WHERE name = $1
       "#,
+      user_name.to_str()
     )
-    .bind(user_name.to_str())
     .fetch_optional(&self.conn)
     .await?;
+    // let x = sqlx::query_as(
+    //   r#"
+    //     SELECT id, name, kind, created_at, updated_at FROM users WHERE name = $1
+    //   "#,
+    // )
+    // .bind(user_name.to_str())
+    // .fetch_optional(&self.conn)
+    // .await?;
     Ok(x)
     // unimplemented!()
   }
@@ -77,6 +81,20 @@ impl TUserRepository for PgContext {
     unimplemented!()
   }
   async fn change_user_name(&self, user_id: &UserID, user_name: &UserName) -> anyhow::Result<User> {
+    unimplemented!()
+  }
+}
+
+#[async_trait]
+impl THotelRepository for PgContext {
+  async fn create_hotel(&self, hotel: &Hotel) -> anyhow::Result<Hotel> {
+    unimplemented!()
+  }
+}
+
+#[async_trait]
+impl TRoomRepository for PgContext {
+  async fn create_room(&self, room: Room) -> anyhow::Result<Room> {
     unimplemented!()
   }
 }

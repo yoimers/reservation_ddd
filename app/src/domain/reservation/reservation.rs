@@ -47,7 +47,7 @@ impl<'a> Serialize for Reservation<'a> {
 
 #[cfg(test)]
 mod test {
-  use chrono::{NaiveDate, NaiveTime};
+  use chrono::{Local, NaiveDate, NaiveTime};
   use serde_json::json;
 
   use crate::domain::{
@@ -60,7 +60,13 @@ mod test {
 
   #[test]
   fn test_serialize() {
-    let user = User::new(UserID::new(), "name".try_into().unwrap(), UserKind::VIP);
+    let user = User::new(
+      UserID::new(),
+      "name".try_into().unwrap(),
+      UserKind::VIP,
+      Local::now().naive_local(),
+      Local::now().naive_local(),
+    );
     let hotel = Hotel::new(
       HotelID::new(),
       "nametest".try_into().unwrap(),

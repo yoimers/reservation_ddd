@@ -1,16 +1,21 @@
+use std::sync::Arc;
+
 use anyhow::{anyhow, Result};
 
 use super::{user::User, user_id::UserID, user_name::UserName, user_repository::TUserRepository};
 
 pub struct UserService {
-  user_repository: Box<dyn TUserRepository>,
+  user_repository: Arc<dyn TUserRepository>,
 }
 
 impl UserService {
-  pub fn new<T: TUserRepository + 'static>(user_repository: T) -> Self {
-    Self {
-      user_repository: Box::new(user_repository),
-    }
+  pub fn new<T: TUserRepository + 'static>(user_repository: Arc<T>) -> Self {
+    Self { user_repository }
+  }
+
+  pub async fn find_user(&self, user_name: &UserName) -> Result<Option<User>> {
+    let user = self.user_repository.find_user(user_name).await?;
+    Ok(user)
   }
 
   pub async fn exists(&self, user_name: &UserName) -> Result<bool> {
